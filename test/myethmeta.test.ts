@@ -115,4 +115,25 @@ describe("MyETHMeta tests", function () {
         await contract.setMetaURIMetaTX(user1.address, uri, nonce, signature);
         expect(await contract.getMetaURI(user1.address)).to.equal(uri);
     });
+
+    it("should set MetaURI with valid signature (second try to test nonce)", async function () {
+        const uri = "https://example.com/meta/2";
+        const nonce = await contract.getNonce(user1.address);
+        const types = {
+            "SetMetaURI": [
+                { name: "owner", type: "address" },
+                { name: "uri", type: "string" },
+                { name: "nonce", type: "uint256" },
+            ]
+        }
+        const message = {
+            owner: user1.address,
+            uri: uri,
+            nonce: nonce,
+        };
+
+        const signature = await user1.signTypedData(domain, types, message);
+        await contract.setMetaURIMetaTX(user1.address, uri, nonce, signature);
+        expect(await contract.getMetaURI(user1.address)).to.equal(uri);
+    });
 });
